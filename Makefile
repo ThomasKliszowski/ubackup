@@ -1,2 +1,2 @@
 test:
-	nosetests ubackup
+	nosetests --with-coverage --cover-package=ubackup
