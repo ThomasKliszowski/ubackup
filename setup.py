@@ -1,13 +1,14 @@
 from setuptools import setup
+import os
 
 from os import path as op
 CURRENT_DIR = op.dirname(__file__)
 
-__version__ = '0.0.1'
+version = open(os.path.join(CURRENT_DIR, 'VERSION.txt'), 'r').read()
 
 setup(
     name='ubackup',
-    version=__version__,
+    version=version,
     packages=['ubackup'],
 
     install_requires=open(op.join(CURRENT_DIR, 'requirements.txt')).read().splitlines(),
