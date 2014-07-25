@@ -1,0 +1,31 @@
+import unittest
+import mock
+from StringIO import StringIO
+from ubackup.remote.dropbox import DropboxRemote
+from ubackup.remote.base import Remote
+from ubackup import settings
+
+settings.CHUNK_SIZE = 1
+
+
+class DropboxRequest(object):
+    def json(*args, **kwargs):
+        return {}
+
+
+class RemoteTest(unittest.TestCase):
+
+    @mock.patch.object(DropboxRemote, 'request')
+    def test_dropbox_remote(self, mock_method):
+        mock_method.return_value = DropboxRequest()
+
+        remote = DropboxRemote(token="coucou")
+        remote.pull('filename')
+        remote.push(StringIO('test'), 'filename')
+
+        self.assertTrue(mock_method.called)
+
+    def test_remote_base(self):
+        remote = Remote()
+        self.assertRaises(NotImplementedError, remote.pull, 'filename')
+        self.assertRaises(NotImplementedError, remote.push, StringIO('stream'), 'filename')
