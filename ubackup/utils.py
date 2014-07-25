@@ -1,8 +1,15 @@
+from __future__ import division
+
 from ubackup import settings
 from subprocess import Popen, PIPE
 import math
 import os
 import imp
+import re
+
+
+def total_seconds(td):
+    return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10 ** 6) / 10 ** 6
 
 
 def filesizeformat(bytes, precision=2):
@@ -46,9 +53,10 @@ def gzip_stream(stream):
 
 
 def md5_stream(stream):
-    return stream_shell(
-        cmd='md5',
-        stdin=stream).read().rstrip()
+    md5_hash = stream_shell(
+        cmd='md5sum',
+        stdin=stream).read()
+    return re.findall(r'^(\w+)', md5_hash)[0]
 
 
 def merge_settings(settings_path=None):

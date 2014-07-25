@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 from .base import Remote
-from ubackup import settings
+from ubackup import settings, utils
 from ubackup.utils import filesizeformat, stream_shell
 from datetime import datetime
 
@@ -68,7 +68,7 @@ class DropboxRemote(Remote):
                 "overwrite": True,
             })
 
-        logger.info('Pushed: done in %ss' % (datetime.now() - start).total_seconds())
+        logger.info('Pushed: done in %ss' % utils.total_seconds(datetime.now() - start))
 
     def pull(self, file_name):
         header = 'Authorization: %s' % self.sign()['Authorization']
