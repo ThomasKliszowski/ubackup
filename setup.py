@@ -18,7 +18,6 @@ setup(
     license='MIT',
     keywords='ubackup backup tool',
     url='https://github.com/ThomasKliszowski/ubackup',
-    long_description=open(op.join(CURRENT_DIR, 'README.rst')).read(),
     include_package_data=True,
     zip_safe=False,
     entry_points='''
