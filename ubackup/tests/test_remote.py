@@ -15,6 +15,11 @@ class DropboxRequest(object):
 
 class RemoteTest(unittest.TestCase):
 
+    def test_remote_base(self):
+        remote = Remote()
+        self.assertRaises(NotImplementedError, remote.pull, 'filename')
+        self.assertRaises(NotImplementedError, remote.push, StringIO('stream'), 'filename')
+
     @mock.patch.object(DropboxRemote, 'request')
     def test_dropbox_remote(self, mock_method):
         mock_method.return_value = DropboxRequest()
@@ -24,8 +29,3 @@ class RemoteTest(unittest.TestCase):
         remote.push(StringIO('test'), 'filename')
 
         self.assertTrue(mock_method.called)
-
-    def test_remote_base(self):
-        remote = Remote()
-        self.assertRaises(NotImplementedError, remote.pull, 'filename')
-        self.assertRaises(NotImplementedError, remote.push, StringIO('stream'), 'filename')
