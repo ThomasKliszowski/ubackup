@@ -13,14 +13,10 @@ class RemoteTest(unittest.TestCase):
 
     def test_creator_base(self):
         creator = Creator()
-        with self.assertRaises(NotImplementedError):
-            creator.data
-        with self.assertRaises(NotImplementedError):
-            creator.unique_name
-        with self.assertRaises(NotImplementedError):
-            creator.create()
-        with self.assertRaises(NotImplementedError):
-            creator.checksum()
+        self.assertRaises(NotImplementedError, lambda: creator.data)
+        self.assertRaises(NotImplementedError, lambda: creator.unique_name)
+        self.assertRaises(NotImplementedError, lambda: creator.create())
+        self.assertRaises(NotImplementedError, lambda: creator.checksum())
 
     def test_creator_path(self):
         temp_dir = uuid4().hex
