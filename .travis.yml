@@ -5,5 +5,11 @@ python:
 
 install:
   - pip install --editable .
+  - pip install -r requirements_dev.txt
+  - pip install coveralls
 
-script: make test
+script:
+  - nosetests --with-coverage --cover-package=ubackup
+
+after_success:
+  coveralls
