@@ -1,15 +1,15 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 import os
 
 from os import path as op
 CURRENT_DIR = op.dirname(__file__)
 
-version = open(os.path.join(CURRENT_DIR, 'ubackup', 'VERSION.txt'), 'r').read()
+version = open(os.path.join(CURRENT_DIR, 'ubackup', 'VERSION.txt'), 'r').read().strip()
 
 setup(
     name='ubackup',
     version=version,
-    packages=['ubackup'],
+    packages=find_packages(),
 
     install_requires=open(op.join(CURRENT_DIR, 'requirements.txt')).read().splitlines(),
 
