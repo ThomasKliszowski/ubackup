@@ -9,11 +9,7 @@ import os
 utils.merge_settings()
 
 settings.CURRENT_DIR = os.path.dirname(__file__)
-settings.VERSION = open(os.path.join(
-    settings.CURRENT_DIR,
-    '..',
-    'VERSION.txt')
-).read()
+settings.VERSION = open(os.path.join(settings.CURRENT_DIR, 'VERSION.txt')).read()
 
 # -----------------------------------------------------------------------------
 # Configure logging
