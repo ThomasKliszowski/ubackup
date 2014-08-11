@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 from .base import Creator
-from ubackup.utils import stream_shell, gzip_stream, md5_stream
+from ubackup.utils import stream_shell
 
 import logging
 logger = logging.getLogger(__name__)
@@ -23,14 +23,8 @@ class PathCreator(Creator):
     def unique_name(self):
         return "path-" + self.path
 
-    def checksum(self):
-        logger.info('Process checksum for %s' % self.path)
-        return md5_stream(stream_shell(
+    @property
+    def stream(self):
+        return stream_shell(
             cmd='tar -cp .',
-            cwd=self.path))
-
-    def create(self):
-        logger.info('Creating backup for %s' % self.path)
-        return gzip_stream(stream_shell(
-            cmd='tar -cp .',
-            cwd=self.path))
+            cwd=self.path)

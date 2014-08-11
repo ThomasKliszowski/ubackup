@@ -1,10 +1,7 @@
 from __future__ import absolute_import
 
 from .base import Creator
-from ubackup.utils import stream_shell, gzip_stream, md5_stream
-
-import logging
-logger = logging.getLogger(__name__)
+from ubackup.utils import stream_shell
 
 
 class MysqlCreator(Creator):
@@ -23,7 +20,8 @@ class MysqlCreator(Creator):
     def unique_name(self):
         return "mysql-" + "-".join(self.databases)
 
-    def mysql_dump(self):
+    @property
+    def stream(self):
         cmd = 'mysqldump -uroot --skip-comments'
 
         if len(self.databases) == 0:
@@ -31,11 +29,3 @@ class MysqlCreator(Creator):
         else:
             cmd += ' --databases %s' % " ".join(self.databases)
         return stream_shell(cmd)
-
-    def checksum(self):
-        logger.info('Process checksum for MySQL')
-        return md5_stream(self.mysql_dump())
-
-    def create(self):
-        logger.info('Creating a MySQL backup')
-        return gzip_stream(self.mysql_dump())

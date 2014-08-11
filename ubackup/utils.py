@@ -46,9 +46,21 @@ def stream_shell(cmd, cwd=None, stdin=None):
     return process.stdout
 
 
+def crypt_stream(stream, crypt_key):
+    return stream_shell(
+        cmd="openssl enc -aes-256-ecb -salt -pass pass:%s" % crypt_key,
+        stdin=stream)
+
+
+def decrypt_stream(stream, crypt_key):
+    return stream_shell(
+        cmd="openssl enc -aes-256-ecb -salt -d -pass pass:%s" % crypt_key,
+        stdin=stream)
+
+
 def gzip_stream(stream):
     return stream_shell(
-        cmd='gzip -fc9',
+        cmd='gzip -fc',
         stdin=stream)
 
 

@@ -3,16 +3,21 @@ import unittest
 import os
 import shutil
 from uuid import uuid4
+from ubackup import settings
 from ubackup.creator.base import Creator
 from ubackup.creator.path import PathCreator
 from ubackup.creator.mysql import MysqlCreator
 from ubackup.utils import md5_stream, stream_shell
+
+settings.CRYPT_KEY = "foo"
 
 
 class RemoteTest(unittest.TestCase):
 
     def test_creator_base(self):
         creator = Creator()
+        self.assertRaises(NotImplementedError, lambda: creator.TYPE)
+        self.assertRaises(NotImplementedError, lambda: creator.stream)
         self.assertRaises(NotImplementedError, lambda: creator.data)
         self.assertRaises(NotImplementedError, lambda: creator.unique_name)
         self.assertRaises(NotImplementedError, lambda: creator.create())
@@ -58,9 +63,9 @@ class RemoteTest(unittest.TestCase):
 
         # Dump
         creator.databases = []
-        creator.mysql_dump()
+        creator.stream
         creator.databases = ['foo']
-        creator.mysql_dump()
+        creator.stream
 
         # Create
         stream = creator.create()

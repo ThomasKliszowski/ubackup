@@ -8,14 +8,21 @@ logger = logging.getLogger(__name__)
 
 class Manager(object):
     DATA_FILE = "backup_data.json"
+    CRYPT_FLAG = "crypted"
 
     def __init__(self, remote):
         self.remote = remote
 
-    def build_filename(self, unique_name):
+    def build_filename(self, creator, crypt=True):
         m = hashlib.md5()
-        m.update(unique_name)
-        return "%s.gz" % m.hexdigest()
+        m.update(creator.unique_name)
+        filename = m.hexdigest()
+
+        # Flag the file as crypted
+        if creator.crypt_enabled and crypt:
+            filename += "-%s" % self.CRYPT_FLAG
+
+        return "%s.gz" % filename
 
 # -----
 
@@ -43,7 +50,7 @@ class Manager(object):
     def push_backup(self, creator):
         checksum = creator.checksum()
 
-        filename = self.build_filename(creator.unique_name)
+        filename = self.build_filename(creator)
         if creator.TYPE not in self.data:
             self.data[creator.TYPE] = {}
 
