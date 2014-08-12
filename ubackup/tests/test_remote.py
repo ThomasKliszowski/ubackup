@@ -3,9 +3,6 @@ import mock
 from StringIO import StringIO
 from ubackup.remote.dropbox import DropboxRemote
 from ubackup.remote.base import Remote
-from ubackup import settings
-
-settings.CHUNK_SIZE = 1
 
 
 class DropboxRequest(object):

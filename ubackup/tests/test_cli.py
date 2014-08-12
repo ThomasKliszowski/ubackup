@@ -5,15 +5,14 @@ import sys
 import mock
 from uuid import uuid4
 from ubackup.cli import main
-from ubackup import settings
-
-settings.DROPBOX_TOKEN = 'foo'
 
 
 class CliTest(unittest.TestCase):
 
     @mock.patch('sys.exit')
     @mock.patch('requests.request')
+    @mock.patch('ubackup.log.set_config')
+    @mock.patch('ubackup.log.set_level')
     def test_cli(self, *args, **kwargs):
         temp_dir = uuid4().hex
         os.mkdir(temp_dir)

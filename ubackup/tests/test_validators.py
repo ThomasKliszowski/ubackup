@@ -2,7 +2,7 @@ import unittest
 import click
 import os
 from uuid import uuid4
-from ubackup.validators import directory, mysql_databases
+from ubackup.cli.validators import directory, mysql_databases
 
 
 class ValidatorsTest(unittest.TestCase):

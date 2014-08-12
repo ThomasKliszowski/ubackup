@@ -1,5 +1,4 @@
-from ubackup import validators
-from ubackup.cli import cli
+from ubackup.cli import cli, validators
 from ubackup.creator.path import PathCreator
 from ubackup.creator.mysql import MysqlCreator
 import click

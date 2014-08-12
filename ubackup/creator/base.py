@@ -30,19 +30,19 @@ class Creator(object):
     # -----
 
     def checksum(self):
-        logger.info('Checksum: %(name)s(%(data)s)' % {
-            'name': self.__class__.__name__,
+        logger.debug('Checksum: %(type)s(%(data)s)' % {
+            'type': self.TYPE,
             'data': self.data
         })
         return md5_stream(self.stream)
 
     def create(self, crypt=True):
-        logger.info('Create: %(name)s(%(data)s)' % {
-            'name': self.__class__.__name__,
+        logger.debug('Create: %(type)s(%(data)s)' % {
+            'type': self.TYPE,
             'data': self.data
         })
-        stream = gzip_stream(self.stream)
 
+        stream = gzip_stream(self.stream)
         if crypt:
             stream = crypt_stream(stream, settings.CRYPT_KEY)
 

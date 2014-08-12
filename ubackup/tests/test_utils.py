@@ -1,5 +1,5 @@
-import hashlib
 import unittest
+import hashlib
 from ubackup.utils import filesizeformat, gzip_stream, md5_stream, stream_shell, crypt_stream, decrypt_stream
 
 

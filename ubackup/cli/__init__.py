@@ -1,4 +1,4 @@
-from ubackup import settings, utils
+from ubackup import settings, utils, log
 from ubackup.remote import REMOTES
 from ubackup.manager import Manager
 import click
@@ -18,9 +18,16 @@ logger = logging.getLogger(__name__)
     help='The remote you want to use.',
     type=click.Choice(REMOTES.keys()),
     required=True)
-def cli(ctx, settings_path, remote):
-    # Merge settings
+@click.option(
+    '--log-level',
+    help='The log level you want to capture.',
+    type=click.Choice(log.level_names()),
+    default='INFO')
+def cli(ctx, settings_path, remote, log_level):
+    # Merge settings and init logging
     utils.merge_settings(settings_path)
+    log.set_config(settings.LOGGING)
+    log.set_level(log_level)
 
     ctx.obj['manager'] = Manager(
         REMOTES[remote](token=settings.DROPBOX_TOKEN))

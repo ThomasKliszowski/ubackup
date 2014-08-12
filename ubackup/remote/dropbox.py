@@ -28,8 +28,15 @@ class DropboxRemote(Remote):
             *args,
             **dict(kwargs, headers=self.sign()))
 
+    def log(self, file_name, message, level='debug'):
+        getattr(logger, level)('%(type)s(%(file_name)s): %(message)s' % {
+            'type': self.TYPE,
+            'file_name': file_name,
+            'message': message
+        })
+
     def push(self, stream, file_name):
-        logger.info('Start pushing %s' % file_name)
+        self.log(file_name, 'start')
         start = datetime.now()
 
         chunk = stream.read(settings.CHUNK_SIZE)
@@ -40,7 +47,7 @@ class DropboxRemote(Remote):
         data = r.json()
         upload_id = data.get("upload_id")
         offset = data.get("offset")
-        logger.info('Pushed: %s' % filesizeformat(sys.getsizeof(chunk)))
+        self.log(file_name, 'pushed %s' % filesizeformat(sys.getsizeof(chunk)))
 
         while True:
             chunk = stream.read(settings.CHUNK_SIZE)
@@ -58,7 +65,7 @@ class DropboxRemote(Remote):
             data = r.json()
             offset = data.get("offset")
 
-            logger.info('Pushed: %s' % filesizeformat(sys.getsizeof(chunk)))
+            self.log(file_name, 'pushed %s' % filesizeformat(sys.getsizeof(chunk)))
 
         r = self.request(
             method="post",
@@ -68,7 +75,10 @@ class DropboxRemote(Remote):
                 "overwrite": True,
             })
 
-        logger.info('Pushed: done in %ss' % utils.total_seconds(datetime.now() - start))
+        self.log(
+            file_name,
+            'pushed in %ss' % utils.total_seconds(datetime.now() - start),
+            level='info')
 
     def pull(self, file_name):
         header = 'Authorization: %s' % self.sign()['Authorization']

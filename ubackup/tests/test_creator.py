@@ -1,15 +1,12 @@
-import mock
 import unittest
+import mock
 import os
 import shutil
 from uuid import uuid4
-from ubackup import settings
 from ubackup.creator.base import Creator
 from ubackup.creator.path import PathCreator
 from ubackup.creator.mysql import MysqlCreator
 from ubackup.utils import md5_stream, stream_shell
-
-settings.CRYPT_KEY = "foo"
 
 
 class RemoteTest(unittest.TestCase):
