@@ -3,7 +3,7 @@ import os
 import shutil
 from uuid import uuid4
 from ubackup.manager import Manager
-from ubackup.creator.path import PathCreator
+from ubackup.backup.path import PathBackup
 from ubackup.utils import stream_shell
 
 
@@ -28,11 +28,11 @@ class ManagerTest(unittest.TestCase):
         manager = Manager(TestRemote())
 
         # Push backup
-        creator = PathCreator(temp_dir)
-        manager.push_backup(creator)
+        backup = PathBackup(temp_dir)
+        manager.push_backup(backup)
 
         # Already exists
-        manager.push_backup(creator)
+        manager.push_backup(backup)
 
         # Restore backup
         manager.restore_backup(None)

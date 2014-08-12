@@ -1,13 +1,13 @@
 from __future__ import absolute_import
 
-from .base import Creator
+from .base import Backup
 from ubackup.utils import stream_shell
 
 import logging
 logger = logging.getLogger(__name__)
 
 
-class PathCreator(Creator):
+class PathBackup(Backup):
     TYPE = "path"
 
     def __init__(self, path):

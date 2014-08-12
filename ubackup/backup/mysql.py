@@ -1,10 +1,10 @@
 from __future__ import absolute_import
 
-from .base import Creator
+from .base import Backup
 from ubackup.utils import stream_shell
 
 
-class MysqlCreator(Creator):
+class MysqlBackup(Backup):
     TYPE = "mysql"
 
     def __init__(self, databases):

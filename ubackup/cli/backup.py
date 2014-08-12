@@ -1,6 +1,6 @@
 from ubackup.cli import cli, validators
-from ubackup.creator.path import PathCreator
-from ubackup.creator.mysql import MysqlCreator
+from ubackup.backup.path import PathBackup
+from ubackup.backup.mysql import MysqlBackup
 import click
 
 import logging
@@ -21,7 +21,7 @@ def backup(ctx):
     callback=validators.directory,
     required=True)
 def path(ctx, path):
-    ctx.obj['manager'].push_backup(PathCreator(path=path))
+    ctx.obj['manager'].push_backup(PathBackup(path=path))
 
 
 @backup.command()
@@ -31,4 +31,4 @@ def path(ctx, path):
     help='List of MySQL databases you want to backup, "*" for all.',
     callback=validators.mysql_databases)
 def mysql(ctx, databases):
-    ctx.obj['manager'].push_backup(MysqlCreator(databases=databases))
+    ctx.obj['manager'].push_backup(MysqlBackup(databases=databases))

@@ -3,24 +3,24 @@ import mock
 import os
 import shutil
 from uuid import uuid4
-from ubackup.creator.base import Creator
-from ubackup.creator.path import PathCreator
-from ubackup.creator.mysql import MysqlCreator
+from ubackup.backup.base import Backup
+from ubackup.backup.path import PathBackup
+from ubackup.backup.mysql import MysqlBackup
 from ubackup.utils import md5_stream, stream_shell
 
 
 class RemoteTest(unittest.TestCase):
 
-    def test_creator_base(self):
-        creator = Creator()
-        self.assertRaises(NotImplementedError, lambda: creator.TYPE)
-        self.assertRaises(NotImplementedError, lambda: creator.stream)
-        self.assertRaises(NotImplementedError, lambda: creator.data)
-        self.assertRaises(NotImplementedError, lambda: creator.unique_name)
-        self.assertRaises(NotImplementedError, lambda: creator.create())
-        self.assertRaises(NotImplementedError, lambda: creator.checksum())
+    def test_backup_base(self):
+        backup = Backup()
+        self.assertRaises(NotImplementedError, lambda: backup.TYPE)
+        self.assertRaises(NotImplementedError, lambda: backup.stream)
+        self.assertRaises(NotImplementedError, lambda: backup.data)
+        self.assertRaises(NotImplementedError, lambda: backup.unique_name)
+        self.assertRaises(NotImplementedError, lambda: backup.create())
+        self.assertRaises(NotImplementedError, lambda: backup.checksum())
 
-    def test_creator_path(self):
+    def test_backup_path(self):
         temp_dir = uuid4().hex
         os.mkdir(temp_dir)
         temp_dir = os.path.abspath(temp_dir)
@@ -28,45 +28,45 @@ class RemoteTest(unittest.TestCase):
         with open(os.path.join(temp_dir, 'foo'), 'w') as fp:
             fp.write('bar')
 
-        creator = PathCreator(temp_dir)
+        backup = PathBackup(temp_dir)
 
         # Checksum
         self.assertEqual(
-            creator.checksum(),
+            backup.checksum(),
             md5_stream(stream_shell(
                 cmd='tar -cp .',
                 cwd=temp_dir)))
 
         # Create
-        stream = creator.create()
+        stream = backup.create()
         stream.read()
 
-        creator.data
-        creator.unique_name
+        backup.data
+        backup.unique_name
 
         shutil.rmtree(temp_dir)
 
     @mock.patch('ubackup.utils.stream_shell')
-    def test_creator_mysql(self, mock_method):
-        creator = MysqlCreator([])
+    def test_backup_mysql(self, mock_method):
+        backup = MysqlBackup([])
 
         # Checksum
         mock_method.return_value = stream_shell(cmd="echo 'foo'")
         md5_processed = md5_stream(stream_shell(
             cmd="echo 'foo'"))
         mock_method.return_value = stream_shell(cmd="echo 'foo'")
-        md5_by_create = creator.checksum()
+        md5_by_create = backup.checksum()
         self.assertEqual(md5_processed, md5_by_create)
 
         # Dump
-        creator.databases = []
-        creator.stream
-        creator.databases = ['foo']
-        creator.stream
+        backup.databases = []
+        backup.stream
+        backup.databases = ['foo']
+        backup.stream
 
         # Create
-        stream = creator.create()
+        stream = backup.create()
         stream.read()
 
-        creator.data
-        creator.unique_name
+        backup.data
+        backup.unique_name

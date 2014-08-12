@@ -5,7 +5,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Creator(object):
+class Backup(object):
 
     @property
     def TYPE(self):

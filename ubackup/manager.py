@@ -13,13 +13,13 @@ class Manager(object):
     def __init__(self, remote):
         self.remote = remote
 
-    def build_filename(self, creator, crypt=True):
+    def build_filename(self, backup, crypt=True):
         m = hashlib.md5()
-        m.update(creator.unique_name)
+        m.update(backup.unique_name)
         filename = m.hexdigest()
 
         # Flag the file as crypted
-        if creator.crypt_enabled and crypt:
+        if backup.crypt_enabled and crypt:
             filename += "-%s" % self.CRYPT_FLAG
 
         return "%s.gz" % filename
@@ -47,24 +47,24 @@ class Manager(object):
 
 # -----
 
-    def push_backup(self, creator):
-        checksum = creator.checksum()
+    def push_backup(self, backup):
+        checksum = backup.checksum()
 
-        filename = self.build_filename(creator)
-        if creator.TYPE not in self.data:
-            self.data[creator.TYPE] = {}
+        filename = self.build_filename(backup)
+        if backup.TYPE not in self.data:
+            self.data[backup.TYPE] = {}
 
-        if filename in self.data[creator.TYPE]:
-            creator_data = self.data[creator.TYPE][filename]
-            if checksum == creator_data['checksum']:
-                logger.info('Backup already exists with the same version: %s (%s)' % (filename, creator.TYPE))
+        if filename in self.data[backup.TYPE]:
+            backup_data = self.data[backup.TYPE][filename]
+            if checksum == backup_data['checksum']:
+                logger.info('Backup already exists with the same version: %s (%s)' % (filename, backup.TYPE))
                 return
 
-        stream = creator.create()
+        stream = backup.create()
         self.remote.push(stream, filename)
 
-        self.data[creator.TYPE][filename] = {
-            'data': creator.data,
+        self.data[backup.TYPE][filename] = {
+            'data': backup.data,
             'checksum': checksum
         }
 
