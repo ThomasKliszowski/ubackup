@@ -70,5 +70,7 @@ class Manager(object):
 
         self.push_data()
 
-    def restore_backup(self, restorer):
-        pass
+    def restore_backup(self, backup):
+        filename = self.build_filename(backup)
+        stream = self.remote.pull(filename)
+        backup.restore(stream)

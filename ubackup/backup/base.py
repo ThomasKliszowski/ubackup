@@ -1,4 +1,4 @@
-from ubackup.utils import md5_stream, gzip_stream, crypt_stream
+from ubackup.utils import md5_stream, gzip_stream, crypt_stream, unzip_stream, decrypt_stream
 from ubackup import settings
 
 import logging
@@ -29,6 +29,9 @@ class Backup(object):
 
     # -----
 
+    def restore_command(self, stream):
+        raise NotImplementedError
+
     def checksum(self):
         logger.debug('Checksum: %(type)s(%(data)s)' % {
             'type': self.TYPE,
@@ -47,3 +50,9 @@ class Backup(object):
             stream = crypt_stream(stream, settings.CRYPT_KEY)
 
         return stream
+
+    def restore(self, stream, crypt=True):
+        if crypt:
+            stream = decrypt_stream(stream, settings.CRYPT_KEY)
+        stream = unzip_stream(stream)
+        self.restore_command(stream)

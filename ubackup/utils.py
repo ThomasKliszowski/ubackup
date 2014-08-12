@@ -64,6 +64,12 @@ def gzip_stream(stream):
         stdin=stream)
 
 
+def unzip_stream(stream):
+    return stream_shell(
+        cmd='gzip -dc',
+        stdin=stream)
+
+
 def md5_stream(stream):
     md5_hash = stream_shell(
         cmd='md5sum',

@@ -2,6 +2,7 @@ from __future__ import absolute_import
 
 from .base import Backup
 from ubackup.utils import stream_shell
+from subprocess import check_call
 
 import logging
 logger = logging.getLogger(__name__)
@@ -28,3 +29,10 @@ class PathBackup(Backup):
         return stream_shell(
             cmd='tar -cp .',
             cwd=self.path)
+
+    def restore_command(self, stream):
+        check_call(
+            ['tar -xp'],
+            stdin=stream,
+            cwd=self.path,
+            shell=True)

@@ -1,6 +1,7 @@
 import unittest
 import os
 import shutil
+import mock
 from uuid import uuid4
 from ubackup.manager import Manager
 from ubackup.backup.path import PathBackup
@@ -9,7 +10,9 @@ from ubackup.utils import stream_shell
 
 class ManagerTest(unittest.TestCase):
 
-    def test_manager(self):
+    @mock.patch('ubackup.backup.mysql.MysqlBackup.restore')
+    @mock.patch('ubackup.backup.path.PathBackup.restore')
+    def test_manager(self, *args, **kwargs):
         temp_dir = uuid4().hex
         os.mkdir(temp_dir)
         temp_dir = os.path.abspath(temp_dir)
@@ -35,6 +38,6 @@ class ManagerTest(unittest.TestCase):
         manager.push_backup(backup)
 
         # Restore backup
-        manager.restore_backup(None)
+        manager.restore_backup(backup)
 
         shutil.rmtree(temp_dir)
