@@ -14,6 +14,8 @@ logger = logging.getLogger(__name__)
 
 class DropboxRemote(Remote):
     TYPE = "dropbox"
+    BASE_URL = 'https://api.dropbox.com/1'
+    CONTENT_URL = 'https://api-content.dropbox.com/1'
 
     def __init__(self, token):
         self.token = token
@@ -21,12 +23,15 @@ class DropboxRemote(Remote):
     def sign(self):
         return {"Authorization": "Bearer %s" % self.token}
 
-    def request(self, method, url, *args, **kwargs):
+    def request(self, method, url, base_url=None, *args, **kwargs):
         return requests.request(
             method,
-            "%s/%s" % (settings.DROPBOX_CONTENT_URL, url),
+            "%s/%s" % (base_url or self.BASE_URL, url),
             *args,
             **dict(kwargs, headers=self.sign()))
+
+    def content_request(self, *args, **kwargs):
+        return self.request(base_url=self.CONTENT_URL, *args, **kwargs)
 
     def log(self, file_name, message, level='debug'):
         getattr(logger, level)('%(type)s(%(file_name)s): %(message)s' % {
@@ -40,7 +45,7 @@ class DropboxRemote(Remote):
         start = datetime.now()
 
         chunk = stream.read(settings.CHUNK_SIZE)
-        r = self.request(
+        r = self.content_request(
             method="put",
             url="chunked_upload",
             data=chunk)
@@ -54,7 +59,7 @@ class DropboxRemote(Remote):
             if not chunk:
                 break
 
-            r = self.request(
+            r = self.content_request(
                 method="put",
                 url="chunked_upload",
                 params={
@@ -67,7 +72,7 @@ class DropboxRemote(Remote):
 
             self.log(file_name, 'pushed %s' % filesizeformat(sys.getsizeof(chunk)))
 
-        r = self.request(
+        r = self.content_request(
             method="post",
             url="commit_chunked_upload/sandbox/%s" % file_name,
             params={
@@ -83,4 +88,13 @@ class DropboxRemote(Remote):
     def pull(self, file_name):
         header = 'Authorization: %s' % self.sign()['Authorization']
         return stream_shell(
-            cmd='wget -qO- --header="%s" %s/files/sandbox/%s' % (header, settings.DROPBOX_CONTENT_URL, file_name))
+            cmd='wget -qO- --header="%s" %s/files/sandbox/%s' % (header, self.CONTENT_URL, file_name))
+
+    def exists(self, file_name):
+        r = self.request(
+            method="get",
+            url="search/auto",
+            params={
+                "query": file_name,
+            })
+        return len(r.json()) > 0

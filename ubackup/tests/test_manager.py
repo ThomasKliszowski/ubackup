@@ -20,13 +20,19 @@ class ManagerTest(unittest.TestCase):
         with open(os.path.join(temp_dir, 'foo'), 'w') as fp:
             fp.write('bar')
 
+        remote_file_exists = True
+
         class TestRemote(object):
+            TYPE = "test"
 
             def push(self, *args, **kwargs):
                 pass
 
             def pull(self, *args, **kwargs):
                 return stream_shell(cmd="echo 'foo'")
+
+            def exists(self, name):
+                return remote_file_exists
 
         manager = Manager(TestRemote())
 
@@ -39,5 +45,7 @@ class ManagerTest(unittest.TestCase):
 
         # Restore backup
         manager.restore_backup(backup)
+        remote_file_exists = False
+        self.assertRaises(Manager.ManagerError, manager.restore_backup, backup)
 
         shutil.rmtree(temp_dir)

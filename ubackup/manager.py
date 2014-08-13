@@ -10,6 +10,9 @@ class Manager(object):
     DATA_FILE = "backup_data.json"
     CRYPT_FLAG = "crypted"
 
+    class ManagerError(Exception):
+        pass
+
     def __init__(self, remote):
         self.remote = remote
 
@@ -72,5 +75,10 @@ class Manager(object):
 
     def restore_backup(self, backup):
         filename = self.build_filename(backup)
+
+        # Check if the file exists
+        if not self.remote.exists(filename):
+            raise self.ManagerError('%s(%s): the file does not exist' % (self.remote.TYPE, filename))
+
         stream = self.remote.pull(filename)
         backup.restore(stream)

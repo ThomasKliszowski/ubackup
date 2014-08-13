@@ -24,5 +24,6 @@ class RemoteTest(unittest.TestCase):
         remote = DropboxRemote(token="coucou")
         remote.pull('filename')
         remote.push(StringIO('test'), 'filename')
+        self.assertFalse(remote.exists('foo'))
 
         self.assertTrue(mock_method.called)

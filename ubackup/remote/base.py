@@ -8,3 +8,6 @@ class Remote(object):
 
     def pull(self, name):
         raise NotImplementedError
+
+    def exists(self, name):
+        raise NotImplementedError
