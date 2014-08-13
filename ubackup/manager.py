@@ -73,12 +73,18 @@ class Manager(object):
 
         self.push_data()
 
-    def restore_backup(self, backup):
+    def restore_backup(self, backup, rev):
         filename = self.build_filename(backup)
 
         # Check if the file exists
         if not self.remote.exists(filename):
             raise self.ManagerError('%s(%s): the file does not exist' % (self.remote.TYPE, filename))
 
-        stream = self.remote.pull(filename)
+        stream = self.remote.pull(filename, rev['id'])
         backup.restore(stream)
+
+        logger.info('%s(%s) restored, rev:%s' % (backup.TYPE, backup.data, rev['id']))
+
+    def get_revisions(self, backup):
+        filename = self.build_filename(backup)
+        return self.remote.get_revisions(filename)

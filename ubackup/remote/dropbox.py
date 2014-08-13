@@ -1,9 +1,8 @@
-from __future__ import absolute_import
-
-from .base import Remote
+from ubackup.remote.base import Remote
 from ubackup import settings, utils
 from ubackup.utils import filesizeformat, stream_shell
 from datetime import datetime
+from dateutil import parser
 
 import requests
 import sys
@@ -85,10 +84,13 @@ class DropboxRemote(Remote):
             'pushed in %ss' % utils.total_seconds(datetime.now() - start),
             level='info')
 
-    def pull(self, file_name):
+    def pull(self, file_name, rev=None):
         header = 'Authorization: %s' % self.sign()['Authorization']
+        get_params = ''
+        if rev is not None:
+            get_params = '?rev=%s' % rev
         return stream_shell(
-            cmd='wget -qO- --header="%s" %s/files/sandbox/%s' % (header, self.CONTENT_URL, file_name))
+            cmd='wget -qO- --header="%s" %s/files/sandbox/%s%s' % (header, self.CONTENT_URL, file_name, get_params))
 
     def exists(self, file_name):
         r = self.request(
@@ -98,3 +100,20 @@ class DropboxRemote(Remote):
                 "query": file_name,
             })
         return len(r.json()) > 0
+
+    def get_revisions(self, file_name):
+        r = self.request(
+            method="get",
+            url="revisions/auto/%s" % file_name,
+            params={
+                'rev_limit': 100,
+            })
+
+        def revision(rev):
+            return {
+                'id': rev['rev'],
+                'size': rev['bytes'],
+                'date': parser.parse(rev['modified'])
+            }
+
+        return [revision(data) for data in r.json()]

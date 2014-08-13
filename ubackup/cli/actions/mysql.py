@@ -1,6 +1,7 @@
 import click
 from ubackup.cli import validators
 from ubackup.backup.mysql import MysqlBackup
+from ubackup.cli.utils import ask_for_rev
 
 option = click.option(
     '--databases',
@@ -19,4 +20,9 @@ def backup(ctx, databases):
 @click.pass_context
 @option
 def restore(ctx, databases):
-    ctx.obj['manager'].restore_backup(MysqlBackup(databases=databases))
+    backup = MysqlBackup(databases=databases)
+
+    revisions = ctx.obj['manager'].get_revisions(backup)
+    rev = ask_for_rev(revisions)
+
+    ctx.obj['manager'].restore_backup(backup, rev)

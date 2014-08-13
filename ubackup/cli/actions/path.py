@@ -1,6 +1,8 @@
 import click
 from ubackup.cli import validators
 from ubackup.backup.path import PathBackup
+from ubackup.cli.utils import ask_for_rev
+
 
 option = click.option(
     '--path',
@@ -20,4 +22,9 @@ def backup(ctx, path):
 @click.pass_context
 @option
 def restore(ctx, path):
-    ctx.obj['manager'].restore_backup(PathBackup(path=path))
+    backup = PathBackup(path=path)
+
+    revisions = ctx.obj['manager'].get_revisions(backup)
+    rev = ask_for_rev(revisions)
+
+    ctx.obj['manager'].restore_backup(backup, rev=rev)

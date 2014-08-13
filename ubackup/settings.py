@@ -29,6 +29,10 @@ LOGGING = {
             'level': 'DEBUG',
             'handlers': ['console'],
         },
+        'requests': {
+            'level': 'WARNING',
+            'handlers': ['console'],
+        }
     },
 }
 

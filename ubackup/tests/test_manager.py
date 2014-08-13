@@ -44,8 +44,8 @@ class ManagerTest(unittest.TestCase):
         manager.push_backup(backup)
 
         # Restore backup
-        manager.restore_backup(backup)
+        manager.restore_backup(backup, {'id': 1})
         remote_file_exists = False
-        self.assertRaises(Manager.ManagerError, manager.restore_backup, backup)
+        self.assertRaises(Manager.ManagerError, manager.restore_backup, backup, {'id': 1})
 
         shutil.rmtree(temp_dir)
