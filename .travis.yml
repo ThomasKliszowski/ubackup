@@ -15,4 +15,8 @@ after_success:
   coveralls
 
 notifications:
-  email: true
+  email:
+    recipients:
+      - thomas.kliszowski@gmail.com
+    on_success: change
+    on_failure: always
