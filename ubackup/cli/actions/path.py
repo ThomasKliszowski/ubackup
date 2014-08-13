@@ -4,7 +4,7 @@ from ubackup.backup.path import PathBackup
 
 option = click.option(
     '--path',
-    help='Path of the backup you want to create/restore.',
+    help='Absolute path of the backup you want to create/restore.',
     callback=validators.directory,
     required=True)
 
