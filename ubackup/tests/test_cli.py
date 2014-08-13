@@ -5,6 +5,7 @@ import sys
 import mock
 from uuid import uuid4
 from ubackup.cli import main
+from ubackup.cli.actions import dicover_commands
 
 
 class CliTest(unittest.TestCase):
@@ -30,3 +31,6 @@ class CliTest(unittest.TestCase):
         main()
 
         shutil.rmtree(temp_dir)
+
+    def test_discover_commands(self):
+        dicover_commands()

@@ -1,6 +1,13 @@
 import unittest
 import hashlib
-from ubackup.utils import filesizeformat, gzip_stream, md5_stream, stream_shell, crypt_stream, decrypt_stream
+import mock
+from ubackup.utils import filesizeformat
+from ubackup.utils import gzip_stream
+from ubackup.utils import md5_stream
+from ubackup.utils import stream_shell
+from ubackup.utils import crypt_stream
+from ubackup.utils import decrypt_stream
+from ubackup.utils import memoized
 
 
 class UtilsTest(unittest.TestCase):
@@ -33,3 +40,14 @@ class UtilsTest(unittest.TestCase):
         crypted_stream = crypt_stream(stream, 'foo')
         decrypted_stream = decrypt_stream(crypted_stream, 'foo')
         self.assertEqual(decrypted_stream.read(), "test\n")
+
+    def test_memoized(self):
+        mock_fn = mock.Mock()
+
+        @memoized
+        def test():
+            mock_fn()
+
+        for i in range(2):
+            test()
+        self.assertEqual(mock_fn.call_count, 1)

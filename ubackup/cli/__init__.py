@@ -1,13 +1,14 @@
 from ubackup import settings, utils, log
 from ubackup.remote import REMOTES
 from ubackup.manager import Manager
+from ubackup.cli import actions
 import click
 
 import logging
 logger = logging.getLogger(__name__)
 
 
-@click.group()
+@click.group(cls=actions.Actions)
 @click.version_option(settings.VERSION)
 @click.pass_context
 @click.option(
@@ -26,7 +27,6 @@ logger = logging.getLogger(__name__)
 def cli(ctx, settings_path, remote, log_level):
     # Merge settings and init logging
     utils.merge_settings(settings_path)
-    log.set_config(settings.LOGGING)
     log.set_level(log_level)
 
     ctx.obj['manager'] = Manager(
@@ -35,13 +35,9 @@ def cli(ctx, settings_path, remote, log_level):
 
 # -----
 
-# Import all sub commands
-from ubackup.cli.backup import *
-
-# -----
-
 
 def main():
+    log.set_config(settings.LOGGING)
     try:
         cli(obj={})
     except Exception as e:
