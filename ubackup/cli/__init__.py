@@ -1,7 +1,10 @@
-from ubackup import settings, utils, log
+from ubackup import settings
+from ubackup import log
+from ubackup.utils import merge_settings
 from ubackup.bucket import BUCKETS
 from ubackup.manager import Manager
 from ubackup.cli import actions
+from ubackup.cli.utils import dropbox_token_flow
 import click
 
 import logging
@@ -26,11 +29,20 @@ logger = logging.getLogger(__name__)
     default='INFO')
 def cli(ctx, settings_path, bucket, log_level):
     # Merge settings and init logging
-    utils.merge_settings(settings_path)
+    merge_settings(settings_path)
     log.set_level(log_level)
 
+    ctx.obj['bucket'] = bucket
     ctx.obj['manager'] = Manager(BUCKETS[bucket]())
 
+
+@cli.command()
+@click.pass_context
+def configure(ctx):
+    if ctx.obj['bucket'] == 'dropbox':
+        dropbox_token_flow()
+    else:
+        click.echo('nothing to configure')
 
 # -----
 

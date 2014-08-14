@@ -36,6 +36,9 @@ LOGGING = {
     },
 }
 
+DROPBOX_APP_KEY = 'rqqumcq9htn0fcb'
+DROPBOX_APP_SECRET = 'ag8dvti5kx2cfg9'
+
 # Handle sentry conf
 # if hasattr(settings, 'SENTRY_DSN'):
 #     settings.LOGGING['handlers']['sentry'] = {
