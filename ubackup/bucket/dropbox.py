@@ -1,4 +1,4 @@
-from ubackup.remote.base import Remote
+from ubackup.bucket.base import Bucket
 from ubackup import settings, utils
 from ubackup.utils import filesizeformat, stream_shell
 from datetime import datetime
@@ -11,7 +11,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class DropboxRemote(Remote):
+class DropboxBucket(Bucket):
     TYPE = "dropbox"
     BASE_URL = 'https://api.dropbox.com/1'
     CONTENT_URL = 'https://api-content.dropbox.com/1'

@@ -20,9 +20,9 @@ class ManagerTest(unittest.TestCase):
         with open(os.path.join(temp_dir, 'foo'), 'w') as fp:
             fp.write('bar')
 
-        remote_file_exists = True
+        bucket_file_exists = True
 
-        class TestRemote(object):
+        class TestBucket(object):
             TYPE = "test"
 
             def push(self, *args, **kwargs):
@@ -32,12 +32,12 @@ class ManagerTest(unittest.TestCase):
                 return stream_shell(cmd="echo 'foo'")
 
             def exists(self, name):
-                return remote_file_exists
+                return bucket_file_exists
 
             def get_revisions(self, name):
                 return []
 
-        manager = Manager(TestRemote())
+        manager = Manager(TestBucket())
 
         # Push backup
         backup = PathBackup(temp_dir)
@@ -51,7 +51,7 @@ class ManagerTest(unittest.TestCase):
 
         # Restore backup
         manager.restore_backup(backup, {'id': 1})
-        remote_file_exists = False
+        bucket_file_exists = False
         self.assertRaises(Manager.ManagerError, manager.restore_backup, backup, {'id': 1})
 
         shutil.rmtree(temp_dir)

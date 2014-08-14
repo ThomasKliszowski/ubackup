@@ -1,5 +1,5 @@
 
-class Remote(object):
+class Bucket(object):
     def __init__(self):
         pass
 

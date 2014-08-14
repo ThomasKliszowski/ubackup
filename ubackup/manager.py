@@ -13,8 +13,8 @@ class Manager(object):
     class ManagerError(Exception):
         pass
 
-    def __init__(self, remote):
-        self.remote = remote
+    def __init__(self, bucket):
+        self.bucket = bucket
 
     def build_filename(self, backup, crypt=True):
         m = hashlib.md5()
@@ -31,8 +31,8 @@ class Manager(object):
 
     def pull_data(self):
         backup_data = {}
-        if self.remote.exists(self.DATA_FILE):
-            data = self.remote.pull(self.DATA_FILE).read()
+        if self.bucket.exists(self.DATA_FILE):
+            data = self.bucket.pull(self.DATA_FILE).read()
             try:
                 backup_data = json.loads(data)
             except ValueError:
@@ -41,7 +41,7 @@ class Manager(object):
 
     def push_data(self):
         stream = StringIO(json.dumps(self.data))
-        self.remote.push(stream, self.DATA_FILE)
+        self.bucket.push(stream, self.DATA_FILE)
 
     @property
     def data(self):
@@ -66,7 +66,7 @@ class Manager(object):
                 return
 
         stream = backup.create()
-        self.remote.push(stream, filename, versioning=True)
+        self.bucket.push(stream, filename, versioning=True)
 
         self.data[backup.TYPE][filename] = {
             'data': backup.data,
@@ -79,14 +79,14 @@ class Manager(object):
         filename = self.build_filename(backup)
 
         # Check if the file exists
-        if not self.remote.exists(filename):
-            raise self.ManagerError('%s(%s): the file does not exist' % (self.remote.TYPE, filename))
+        if not self.bucket.exists(filename):
+            raise self.ManagerError('%s(%s): the file does not exist' % (self.bucket.TYPE, filename))
 
-        stream = self.remote.pull(filename, rev['id'])
+        stream = self.bucket.pull(filename, rev['id'])
         backup.restore(stream)
 
         logger.info('%s(%s) restored, rev:%s' % (backup.TYPE, backup.data, rev['id']))
 
     def get_revisions(self, backup):
         filename = self.build_filename(backup)
-        return self.remote.get_revisions(filename)
+        return self.bucket.get_revisions(filename)

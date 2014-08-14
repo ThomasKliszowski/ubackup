@@ -1,4 +1,4 @@
-from ubackup.remote.base import Remote
+from ubackup.bucket.base import Bucket
 from ubackup import utils
 from datetime import datetime
 from dateutil import tz
@@ -10,7 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class LocalRemote(Remote):
+class LocalBucket(Bucket):
     TYPE = "local"
     PATTERN = r'(\.(\d)+)?$'
     FILES_LIMIT = 5

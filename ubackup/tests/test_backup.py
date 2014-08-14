@@ -10,7 +10,7 @@ from ubackup.backup.mysql import MysqlBackup
 from ubackup.utils import md5_stream, stream_shell
 
 
-class RemoteTest(unittest.TestCase):
+class BucketTest(unittest.TestCase):
 
     def test_backup_base(self):
         backup = Backup()

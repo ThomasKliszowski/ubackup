@@ -24,7 +24,7 @@ class CliTest(unittest.TestCase):
 
         sys.argv = [
             None,
-            '--remote=dropbox',
+            '--bucket=dropbox',
             'backup',
             'path',
             '--path=%s' % temp_dir]
