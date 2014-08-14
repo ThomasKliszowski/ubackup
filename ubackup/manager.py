@@ -1,13 +1,14 @@
-from StringIO import StringIO
 import hashlib
 import json
+import os
+from ubackup import settings
 
 import logging
 logger = logging.getLogger(__name__)
 
 
 class Manager(object):
-    DATA_FILE = "backup_data.json"
+    DATA_FILE = os.path.join(settings.CURRENT_DIR, "ubackup_data.json")
     CRYPT_FLAG = "crypted"
 
     class ManagerError(Exception):
@@ -31,17 +32,18 @@ class Manager(object):
 
     def pull_data(self):
         backup_data = {}
-        if self.bucket.exists(self.DATA_FILE):
-            data = self.bucket.pull(self.DATA_FILE).read()
-            try:
-                backup_data = json.loads(data)
-            except ValueError:
-                pass
+        if os.path.exists(self.DATA_FILE):
+            with open(self.DATA_FILE, 'r') as fp:
+                data = fp.read()
+                try:
+                    backup_data = json.loads(data)
+                except ValueError:
+                    pass
         return backup_data
 
     def push_data(self):
-        stream = StringIO(json.dumps(self.data))
-        self.bucket.push(stream, self.DATA_FILE)
+        with open(self.DATA_FILE, 'w') as fp:
+            json.dump(self.data, fp)
 
     @property
     def data(self):
