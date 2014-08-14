@@ -20,15 +20,17 @@ def dicover_commands():
     return commands
 
 
-class Actions(click.MultiCommand):
+class Actions(click.Group):
     '''Actions are submodules click commands of this module.
     '''
 
     def list_commands(self, ctx):
-        return [key for key, value in dicover_commands().items()]
+        cmds = sorted(self.commands)
+        backup_cmds = [key for key, value in dicover_commands().items()]
+        return sorted(cmds + backup_cmds)
 
     def get_command(self, ctx, name):
-        return Types(command_name=name)
+        return self.commands.get(name) or Types(command_name=name)
 
 
 class Types(click.MultiCommand):
