@@ -57,12 +57,3 @@ if not os.environ.get('TESTING'):
 
 DROPBOX_APP_KEY = 'rqqumcq9htn0fcb'
 DROPBOX_APP_SECRET = 'ag8dvti5kx2cfg9'
-
-# Handle sentry conf
-# if hasattr(settings, 'SENTRY_DSN'):
-#     settings.LOGGING['handlers']['sentry'] = {
-#         'level': 'ERROR',
-#         'class': 'raven.handlers.logging.SentryHandler',
-#         'dsn': settings.SENTRY_DSN,
-#     }
-#     settings.LOGGING['loggers']['']['handlers'].append('sentry')
