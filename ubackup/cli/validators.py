@@ -6,6 +6,8 @@ import re
 def directory(ctx, param, value):
     if value is not None and not os.path.isdir(value):
         raise click.BadParameter('path is not a directory')
+    elif not value.startswith('/'):
+        raise click.BadParameter('path must be an absolute path')
     return value
 
 

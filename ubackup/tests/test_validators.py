@@ -2,7 +2,7 @@ import unittest
 import click
 import os
 from uuid import uuid4
-from ubackup.validators import directory, mysql_databases
+from ubackup.cli.validators import directory, mysql_databases
 
 
 class ValidatorsTest(unittest.TestCase):
@@ -10,6 +10,7 @@ class ValidatorsTest(unittest.TestCase):
     def test_directory_success(self):
         tmp_dir = uuid4().hex
         os.mkdir(tmp_dir)
+        tmp_dir = os.path.abspath(tmp_dir)
         directory(None, 'path', tmp_dir)
         os.rmdir(tmp_dir)
 

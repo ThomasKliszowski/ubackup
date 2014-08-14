@@ -1,13 +1,11 @@
 from __future__ import absolute_import
 
-from .base import Creator
-from ubackup.utils import stream_shell, gzip_stream, md5_stream
-
-import logging
-logger = logging.getLogger(__name__)
+from .base import Backup
+from ubackup.utils import stream_shell
+from subprocess import check_call
 
 
-class MysqlCreator(Creator):
+class MysqlBackup(Backup):
     TYPE = "mysql"
 
     def __init__(self, databases):
@@ -23,19 +21,22 @@ class MysqlCreator(Creator):
     def unique_name(self):
         return "mysql-" + "-".join(self.databases)
 
-    def mysql_dump(self):
+    @property
+    def stream(self):
         cmd = 'mysqldump -uroot --skip-comments'
 
         if len(self.databases) == 0:
             cmd += ' --all-databases'
         else:
             cmd += ' --databases %s' % " ".join(self.databases)
+
+        # Speed up mysql restore by setting some flags
+        cmd = "echo \"SET autocommit=0;SET unique_checks=0;SET foreign_key_checks=0;\" && %s && echo \"COMMIT;\"" % cmd
+
         return stream_shell(cmd)
 
-    def checksum(self):
-        logger.info('Process checksum for MySQL')
-        return md5_stream(self.mysql_dump())
-
-    def create(self):
-        logger.info('Creating a MySQL backup')
-        return gzip_stream(self.mysql_dump())
+    def restore_command(self, stream):
+        check_call(
+            ['mysql -uroot'],
+            stdin=stream,
+            shell=True)

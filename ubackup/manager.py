@@ -8,28 +8,40 @@ logger = logging.getLogger(__name__)
 
 class Manager(object):
     DATA_FILE = "backup_data.json"
+    CRYPT_FLAG = "crypted"
 
-    def __init__(self, remote):
-        self.remote = remote
+    class ManagerError(Exception):
+        pass
 
-    def build_filename(self, unique_name):
+    def __init__(self, bucket):
+        self.bucket = bucket
+
+    def build_filename(self, backup, crypt=True):
         m = hashlib.md5()
-        m.update(unique_name)
-        return "%s.gz" % m.hexdigest()
+        m.update(backup.unique_name)
+        filename = m.hexdigest()
+
+        # Flag the file as crypted
+        if backup.crypt_enabled and crypt:
+            filename += "-%s" % self.CRYPT_FLAG
+
+        return "%s.gz" % filename
 
 # -----
 
     def pull_data(self):
-        data = self.remote.pull(self.DATA_FILE).read()
-        try:
-            data = json.loads(data)
-        except ValueError:
-            data = {}
-        return data
+        backup_data = {}
+        if self.bucket.exists(self.DATA_FILE):
+            data = self.bucket.pull(self.DATA_FILE).read()
+            try:
+                backup_data = json.loads(data)
+            except ValueError:
+                pass
+        return backup_data
 
     def push_data(self):
         stream = StringIO(json.dumps(self.data))
-        self.remote.push(stream, self.DATA_FILE)
+        self.bucket.push(stream, self.DATA_FILE)
 
     @property
     def data(self):
@@ -40,28 +52,41 @@ class Manager(object):
 
 # -----
 
-    def push_backup(self, creator):
-        checksum = creator.checksum()
+    def push_backup(self, backup):
+        checksum = backup.checksum()
 
-        filename = self.build_filename(creator.unique_name)
-        if creator.TYPE not in self.data:
-            self.data[creator.TYPE] = {}
+        filename = self.build_filename(backup)
+        if backup.TYPE not in self.data:
+            self.data[backup.TYPE] = {}
 
-        if filename in self.data[creator.TYPE]:
-            creator_data = self.data[creator.TYPE][filename]
-            if checksum == creator_data['checksum']:
-                logger.info('Backup already exists with the same version: %s (%s)' % (filename, creator.TYPE))
+        if filename in self.data[backup.TYPE]:
+            backup_data = self.data[backup.TYPE][filename]
+            if checksum == backup_data['checksum']:
+                logger.info('Backup already exists with the same version: %s (%s)' % (filename, backup.TYPE))
                 return
 
-        stream = creator.create()
-        self.remote.push(stream, filename)
+        stream = backup.create()
+        self.bucket.push(stream, filename, versioning=True)
 
-        self.data[creator.TYPE][filename] = {
-            'data': creator.data,
+        self.data[backup.TYPE][filename] = {
+            'data': backup.data,
             'checksum': checksum
         }
 
         self.push_data()
 
-    def restore_backup(self, restorer):
-        pass
+    def restore_backup(self, backup, rev):
+        filename = self.build_filename(backup)
+
+        # Check if the file exists
+        if not self.bucket.exists(filename):
+            raise self.ManagerError('%s(%s): the file does not exist' % (self.bucket.TYPE, filename))
+
+        stream = self.bucket.pull(filename, rev['id'])
+        backup.restore(stream)
+
+        logger.info('%s(%s) restored, rev:%s' % (backup.TYPE, backup.data, rev['id']))
+
+    def get_revisions(self, backup):
+        filename = self.build_filename(backup)
+        return self.bucket.get_revisions(filename)
