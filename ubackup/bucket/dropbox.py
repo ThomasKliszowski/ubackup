@@ -12,12 +12,12 @@ logger = logging.getLogger(__name__)
 
 
 class DropboxBucket(Bucket):
-    TYPE = "dropbox"
+    TYPE = 'dropbox'
     BASE_URL = 'https://api.dropbox.com/1'
     CONTENT_URL = 'https://api-content.dropbox.com/1'
 
     def __init__(self, token=None):
-        self.token = token or settings.DROPBOX_TOKEN
+        self.token = token or self.conf['token']
 
     def sign(self):
         return {"Authorization": "Bearer %s" % self.token}

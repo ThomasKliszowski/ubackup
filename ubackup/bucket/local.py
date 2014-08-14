@@ -11,15 +11,13 @@ logger = logging.getLogger(__name__)
 
 
 class LocalBucket(Bucket):
-    TYPE = "local"
+    TYPE = 'local'
     PATTERN = r'(\.(\d)+)?$'
     FILES_LIMIT = 5
 
     def __init__(self, path=None, files_limit=None):
-        self.local_path = path or "/tmp"
-
-        if files_limit is not None:
-            self.FILES_LIMIT = files_limit
+        self.local_path = path or self.conf['path']
+        self.FILES_LIMIT = files_limit or self.conf.get('limit') or self.FILES_LIMIT
 
     def log(self, filename, message, level='debug'):
         getattr(logger, level)('%(type)s(%(filename)s): %(message)s' % {
