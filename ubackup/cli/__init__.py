@@ -29,8 +29,7 @@ def cli(ctx, settings_path, remote, log_level):
     utils.merge_settings(settings_path)
     log.set_level(log_level)
 
-    ctx.obj['manager'] = Manager(
-        REMOTES[remote](token=settings.DROPBOX_TOKEN))
+    ctx.obj['manager'] = Manager(REMOTES[remote]())
 
 
 # -----

@@ -30,12 +30,14 @@ class Manager(object):
 # -----
 
     def pull_data(self):
-        data = self.remote.pull(self.DATA_FILE).read()
-        try:
-            data = json.loads(data)
-        except ValueError:
-            data = {}
-        return data
+        backup_data = {}
+        if self.remote.exists(self.DATA_FILE):
+            data = self.remote.pull(self.DATA_FILE).read()
+            try:
+                backup_data = json.loads(data)
+            except ValueError:
+                pass
+        return backup_data
 
     def push_data(self):
         stream = StringIO(json.dumps(self.data))
@@ -64,7 +66,7 @@ class Manager(object):
                 return
 
         stream = backup.create()
-        self.remote.push(stream, filename)
+        self.remote.push(stream, filename, versioning=True)
 
         self.data[backup.TYPE][filename] = {
             'data': backup.data,

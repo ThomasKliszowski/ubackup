@@ -34,6 +34,9 @@ class ManagerTest(unittest.TestCase):
             def exists(self, name):
                 return remote_file_exists
 
+            def get_revisions(self, name):
+                return []
+
         manager = Manager(TestRemote())
 
         # Push backup
@@ -42,6 +45,9 @@ class ManagerTest(unittest.TestCase):
 
         # Already exists
         manager.push_backup(backup)
+
+        # Get revisions
+        self.assertEqual(len(manager.get_revisions(backup)), 0)
 
         # Restore backup
         manager.restore_backup(backup, {'id': 1})

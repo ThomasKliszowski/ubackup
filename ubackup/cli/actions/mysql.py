@@ -3,6 +3,7 @@ from ubackup.cli import validators
 from ubackup.backup.mysql import MysqlBackup
 from ubackup.cli.utils import ask_for_rev
 
+
 option = click.option(
     '--databases',
     help='List of MySQL databases you want to backup/restore, "*" for all.',

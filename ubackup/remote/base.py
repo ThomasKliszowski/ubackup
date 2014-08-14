@@ -3,7 +3,7 @@ class Remote(object):
     def __init__(self):
         pass
 
-    def push(self, stream, name):
+    def push(self, stream, name, versioning=False):
         raise NotImplementedError
 
     def pull(self, name):

@@ -16,8 +16,8 @@ class DropboxRemote(Remote):
     BASE_URL = 'https://api.dropbox.com/1'
     CONTENT_URL = 'https://api-content.dropbox.com/1'
 
-    def __init__(self, token):
-        self.token = token
+    def __init__(self, token=None):
+        self.token = token or settings.DROPBOX_TOKEN
 
     def sign(self):
         return {"Authorization": "Bearer %s" % self.token}
@@ -39,7 +39,7 @@ class DropboxRemote(Remote):
             'message': message
         })
 
-    def push(self, stream, file_name):
+    def push(self, stream, file_name, versioning=False):
         self.log(file_name, 'start')
         start = datetime.now()
 
@@ -112,7 +112,7 @@ class DropboxRemote(Remote):
         def revision(rev):
             return {
                 'id': rev['rev'],
-                'size': rev['bytes'],
+                'size': filesizeformat(rev['bytes']),
                 'date': parser.parse(rev['modified'])
             }
 
