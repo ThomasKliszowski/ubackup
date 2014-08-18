@@ -7,9 +7,12 @@ CHUNK_SIZE = 1024 * 1024 * 10
 CURRENT_DIR = os.path.dirname(__file__)
 VERSION = open(os.path.join(CURRENT_DIR, 'VERSION.txt')).read()
 
+DROPBOX_APP_KEY = 'rqqumcq9htn0fcb'
+DROPBOX_APP_SECRET = 'ag8dvti5kx2cfg9'
+
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,  # this fixes the problem
+    'disable_existing_loggers': False,
 
     'formatters': {
         'standard': {
@@ -54,6 +57,3 @@ if not os.environ.get('TESTING'):
         }
         for logger, obj in LOGGING['loggers'].items():
             obj['handlers'].append('rotate_file')
-
-DROPBOX_APP_KEY = 'rqqumcq9htn0fcb'
-DROPBOX_APP_SECRET = 'ag8dvti5kx2cfg9'
