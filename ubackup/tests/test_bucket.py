@@ -13,6 +13,10 @@ class DropboxRequest(object):
     def json(*args, **kwargs):
         return {}
 
+    @property
+    def status_code(*args, **kwargs):
+        return 200
+
 
 class BucketTest(unittest.TestCase):
 
@@ -45,6 +49,10 @@ class BucketTest(unittest.TestCase):
                     'bytes': 1000,
                     'modified': 'Fri, 16 Sep 2011 01:01:25 +0000'
                 }]
+
+            @property
+            def status_code(*args, **kwargs):
+                return 200
         mock_method.return_value = DropboxRequest2()
         self.assertEqual(len(bucket.get_revisions('filename')), 2)
 
