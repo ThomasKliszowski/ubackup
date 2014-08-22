@@ -1,24 +1,19 @@
-import unittest
 import os
-import shutil
 import sys
 import mock
-from uuid import uuid4
+from ubackup.tests import TestCase
 from ubackup.cli import main
 from ubackup.cli.actions import dicover_commands
+from ubackup.cli.utils import dropbox_token_flow
 
 
-class CliTest(unittest.TestCase):
+class CliTest(TestCase):
 
     @mock.patch('sys.exit')
     @mock.patch('ubackup.log.set_config')
     @mock.patch('ubackup.log.set_level')
     def test_cli(self, *args, **kwargs):
-        temp_dir = uuid4().hex
-        os.mkdir(temp_dir)
-        temp_dir = os.path.abspath(temp_dir)
-
-        with open(os.path.join(temp_dir, 'foo'), 'w') as fp:
+        with open(os.path.join(self.tmp_dir, 'foo'), 'w') as fp:
             fp.write('bar')
 
         sys.argv = [
@@ -26,10 +21,18 @@ class CliTest(unittest.TestCase):
             '--bucket=dropbox',
             'backup',
             'path',
-            '--path=%s' % temp_dir]
+            '--path=%s' % self.tmp_dir]
         main()
-
-        shutil.rmtree(temp_dir)
 
     def test_discover_commands(self):
         dicover_commands()
+
+    @mock.patch('requests.post')
+    @mock.patch('click.prompt')
+    @mock.patch('click.pause')
+    @mock.patch('click.launch')
+    def test_dropbox_token_flow(self, mock_launch, mock_pause, mock_prompt, *args, **kwargs):
+        dropbox_token_flow()
+        self.assertTrue(mock_launch.called)
+        self.assertTrue(mock_pause.called)
+        self.assertTrue(mock_prompt.called)

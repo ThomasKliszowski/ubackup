@@ -1,9 +1,6 @@
-import unittest
 import mock
-import os
-import shutil
-from uuid import uuid4
 from StringIO import StringIO
+from ubackup.tests import TestCase
 from ubackup.bucket.dropbox import DropboxBucket
 from ubackup.bucket.local import LocalBucket
 from ubackup.bucket.base import Bucket
@@ -18,7 +15,7 @@ class DropboxRequest(object):
         return 200
 
 
-class BucketTest(unittest.TestCase):
+class BucketTest(TestCase):
 
     def test_bucket_base(self):
         bucket = Bucket()
@@ -59,12 +56,8 @@ class BucketTest(unittest.TestCase):
         self.assertTrue(mock_method.called)
 
     def test_local_bucket(self):
-        temp_dir = uuid4().hex
-        os.mkdir(temp_dir)
-        temp_dir = os.path.abspath(temp_dir)
-
         # Test versioning
-        bucket = LocalBucket(path=temp_dir, files_limit=2)
+        bucket = LocalBucket(path=self.tmp_dir, files_limit=2)
         bucket.push(StringIO('test'), 'foo', versioning=True)
         bucket.push(StringIO('test'), 'foo', versioning=True)
         self.assertEqual(len(bucket.get_revisions('foo')), 2)
@@ -84,5 +77,3 @@ class BucketTest(unittest.TestCase):
         # Test exists
         self.assertTrue(bucket.exists('foo'))
         self.assertFalse(bucket.exists('bar'))
-
-        shutil.rmtree(temp_dir)
