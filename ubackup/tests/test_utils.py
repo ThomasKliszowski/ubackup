@@ -1,6 +1,6 @@
-import unittest
 import hashlib
 import mock
+from ubackup.tests import TestCase
 from ubackup.utils import filesizeformat
 from ubackup.utils import gzip_stream
 from ubackup.utils import md5_stream
@@ -10,7 +10,7 @@ from ubackup.utils import decrypt_stream
 from ubackup.utils import memoized
 
 
-class UtilsTest(unittest.TestCase):
+class UtilsTest(TestCase):
 
     def test_filesizeformat(self):
         size = filesizeformat(1024)

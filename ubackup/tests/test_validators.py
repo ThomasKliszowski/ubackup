@@ -1,18 +1,14 @@
-import unittest
 import click
-import os
 from uuid import uuid4
-from ubackup.cli.validators import directory, mysql_databases
+from ubackup.tests import TestCase
+from ubackup.cli.validators import directory
+from ubackup.cli.validators import mysql_databases
 
 
-class ValidatorsTest(unittest.TestCase):
+class ValidatorsTest(TestCase):
 
     def test_directory_success(self):
-        tmp_dir = uuid4().hex
-        os.mkdir(tmp_dir)
-        tmp_dir = os.path.abspath(tmp_dir)
-        directory(None, 'path', tmp_dir)
-        os.rmdir(tmp_dir)
+        directory(None, 'path', self.tmp_dir)
 
     def test_directory_fail(self):
         self.assertRaises(click.BadParameter, directory, None, 'path', uuid4().hex)

@@ -1,4 +1,7 @@
+from ubackup import settings
+
 import logging
+import os
 
 # Import correct dictConfig depending on the Python version
 try:
@@ -20,4 +23,22 @@ def set_level(level_name):
 
 
 def set_config(config):
+    # Add a RotatingFileHandler to logging config
+    if not os.path.exists(settings.LOG_DIRECTORY):
+        try:
+            os.mkdir(settings.LOG_DIRECTORY)
+        except OSError:
+            pass
+    if os.path.exists(settings.LOG_DIRECTORY):
+        config['handlers']['rotate_file'] = {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'standard',
+            'filename': os.path.join(settings.LOG_DIRECTORY, 'ubackup.log'),
+            'backupCount': 5,
+            'maxBytes': 1024 * 1024 * 20
+        }
+        for logger, obj in config['loggers'].items():
+            obj['handlers'].append('rotate_file')
+
     dictConfig(config)

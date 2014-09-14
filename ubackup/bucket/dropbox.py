@@ -23,11 +23,14 @@ class DropboxBucket(Bucket):
         return {"Authorization": "Bearer %s" % self.token}
 
     def request(self, method, url, base_url=None, *args, **kwargs):
-        return requests.request(
+        r = requests.request(
             method,
             "%s/%s" % (base_url or self.BASE_URL, url),
             *args,
             **dict(kwargs, headers=self.sign()))
+        if r.status_code != 200:
+            raise self.BucketError("The bucket returned an error.", r)
+        return r
 
     def content_request(self, *args, **kwargs):
         return self.request(base_url=self.CONTENT_URL, *args, **kwargs)
@@ -112,7 +115,7 @@ class DropboxBucket(Bucket):
         def revision(rev):
             return {
                 'id': rev['rev'],
-                'size': filesizeformat(rev['bytes']),
+                'size': rev['bytes'],
                 'date': parser.parse(rev['modified'])
             }
 
