@@ -115,7 +115,7 @@ class DropboxBucket(Bucket):
         def revision(rev):
             return {
                 'id': rev['rev'],
-                'size': filesizeformat(rev['bytes']),
+                'size': rev['bytes'],
                 'date': parser.parse(rev['modified'])
             }
 
