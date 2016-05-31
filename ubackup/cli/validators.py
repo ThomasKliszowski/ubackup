@@ -19,3 +19,13 @@ def mysql_databases(ctx, param, value):
         if len(databases) == 0:
             raise click.BadParameter('incorrect value')
     return databases
+
+
+def postgresql_databases(ctx, param, value):
+    if value == '*' or value is None:
+        databases = []
+    else:
+        databases = re.findall(r'[\w_-]+', value)
+        if len(databases) == 0:
+            raise click.BadParameter('incorrect value')
+    return databases
