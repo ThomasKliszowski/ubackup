@@ -27,7 +27,7 @@ class PostgresqlBackup(Backup):
 
         # Speed up mysql restore by setting some flags
         cmd = 'sudo -u postgres psql -c "select pg_start_backup(\'ubackup\', true);" '
-            '&& %s && sudo -u postgres psql -c "select pg_stop_backup();"' % cmd
+        '&& %s && sudo -u postgres psql -c "select pg_stop_backup();"' % cmd
 
         return stream_shell(cmd)
 
