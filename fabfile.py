@@ -17,7 +17,7 @@ env.user = 'backup'
 # -----------------------------------------------------------------------------
 
 def virtualenv():
-    return prefix('. %(base_dir)s/venv/bin/activate' % env)
+    return prefix('. %(base_dir)s/.venv/bin/activate' % env)
 
 @task
 def deploy():
